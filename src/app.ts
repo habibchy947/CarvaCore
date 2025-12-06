@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import initDB from "./config/db";
 import { authRoutes } from "./modules/auth/auth.routes";
+import { userRoutes } from "./modules/users/users.routes";
 
 const app = express()
 
@@ -22,7 +23,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!')
 })
 
-
+app.use("/api/v1/users", userRoutes)
 app.use("/api/v1/auth", authRoutes)
 
 // not found route
