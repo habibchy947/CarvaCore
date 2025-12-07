@@ -126,7 +126,7 @@ const updateBookings = async (status: string, id:string, loggedInUser: JwtPayloa
 
     // if cancelled
     if(status === 'cancelled') {
-        if(loggedInUser.role !== "admin" && Number(booking.customer_id) !== Number(loggedInUser.id)) {
+        if(loggedInUser.role !== "customer" && Number(booking.customer_id) !== Number(loggedInUser.id)) {
             throw new Error("Forbidden");
         }
 
