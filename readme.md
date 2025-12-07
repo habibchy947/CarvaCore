@@ -1,4 +1,4 @@
-# 🚗 Vehicle Rental System
+# 🚗 CarvaCore
 
 **Live URL:** *(Add your live deployment URL here)*
 
