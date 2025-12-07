@@ -74,8 +74,37 @@ const getSingleVehicle = async (req: Request, res: Response) => {
         })
 }
 }
+
+
+// update vehicle
+const updateVehicle = async (req: Request, res: Response) => {
+    // const loggedInUser = req.user as JwtPayload;
+     try {
+        const result = await vehiclesServices.updateVehicle(req.body, req.params.vehicleId as string)
+        if (result.rows.length === 0) {
+            res.status(404).json({
+                success: false,
+                message: "Vehicles not found",
+            });
+        } else {
+            res.status(200).json({
+                success: true,
+                message: "Vehicles updated successfully...",
+                data: result.rows[0]
+            });
+        };
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message,
+            details: err
+        });
+    };
+}
+
 export const vehiclesController = {
     createVehicles,
     getAllVehicles,
-    getSingleVehicle
+    getSingleVehicle,
+    updateVehicle
 }
