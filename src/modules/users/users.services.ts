@@ -56,6 +56,7 @@ const deleteUser = async (id: string) => {
     
     return result;
 }
+
 export const userServices = {
     getAllusers,
     updateUser,
