@@ -19,9 +19,11 @@ const updateUser = async (payload: Record<string, unknown>, id: string, loggedIn
         if(existing.rows.length === 0) {
             throw new Error("User not found")
         }
-       if(loggedInUser.role === "customer" && loggedInUser.role !== existing.rows[0].role) {
-            throw new Error("Unauthorized access")
-        } 
+        if(loggedInUser.role === "customer") {
+            if(loggedInUser.id !== id) {
+                throw new Error("Unauthorized access")
+            }
+        }
 
 
         const updateUser = {
