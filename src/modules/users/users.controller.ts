@@ -23,7 +23,7 @@ const updateUser = async (req: Request, res: Response) => {
     const loggedInUser = req.user as JwtPayload;
      try {
         const result = await userServices.updateUser(req.body, req.params.userId as string, loggedInUser)
-        if (result.rows.length === 0) {
+        if (!result) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
