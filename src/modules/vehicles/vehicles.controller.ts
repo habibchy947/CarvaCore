@@ -29,20 +29,20 @@ const getAllVehicles = async (req: Request, res: Response) => {
     try {
         const result = await vehiclesServices.getAllVehicles()
         if(result.rows.length === 0) {
-            res.status(400).json({
+            return res.status(400).json({
             success: false,
             message: "No vehicles found",
             data: result.rows
         })
         } else{
-            res.status(200).json({
+            return res.status(200).json({
             success: true,
             message: "Vehicles retrieved successfully",
             data: result.rows
         })
         }
     } catch (error: any) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: error.message,
             errors: error
@@ -54,20 +54,20 @@ const getSingleVehicle = async (req: Request, res: Response) => {
     try {
         const result = await vehiclesServices.getSingleVehicle(req.params.vehicleId as string)
         if(result.rows.length === 0) {
-            res.status(400).json({
+            return res.status(400).json({
             success: false,
             message: "No vehicles found",
             data: result.rows
         })
         } else{
-            res.status(200).json({
+            return res.status(200).json({
             success: true,
             message: "Vehicles retrieved successfully",
             data: result.rows[0]
         })
         }
     } catch (error: any) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: error.message,
             errors: error
@@ -82,19 +82,19 @@ const updateVehicle = async (req: Request, res: Response) => {
      try {
         const result = await vehiclesServices.updateVehicle(req.body, req.params.vehicleId as string)
         if (result.rows.length === 0) {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "Vehicles not found",
             });
         } else {
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Vehicles updated successfully...",
                 data: result.rows[0]
             });
         };
     } catch (err: any) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: err.message,
             details: err
@@ -107,18 +107,18 @@ const deleteVehicle = async (req: Request, res: Response) => {
     try {
         const result = await vehiclesServices.deleteVehicle(req.params.vehicleId as string)
         if (result.rowCount === 0) {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "Vehicle not found",
             });
         } else {
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Vehicle deleted successfully",
             });
         };
     } catch (err: any) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: err.message,
             details: err

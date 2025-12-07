@@ -6,12 +6,12 @@ const createBookings = async (req: Request, res: Response) => {
     try {
         const { result, vehicle } = await bookingServices.createBookings(req.body);
         if (result.rows.length === 0) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: "Vehicle is not found"
             })
         } else {
-            res.status(201).json({
+            return res.status(201).json({
                 success: true,
                 message: "Booking created successfully",
                 data: {
@@ -39,14 +39,14 @@ const getAllBooking = async (req: Request, res: Response) => {
                 message: "Booking not found"
             })
         } else {
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Bookings retrieved successfully",
                 data: result
             })
         }
     } catch (error: any) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: error.message,
             errors: error
