@@ -13,7 +13,6 @@ initDB();
 app.use(express.json());
 
 app.post("/", (req: Request, res: Response) => {
-    console.log(req.body)
 
     res.status(201).json({
         success: true,

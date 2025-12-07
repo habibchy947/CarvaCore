@@ -104,10 +104,8 @@ const updateVehicle = async (req: Request, res: Response) => {
 
 // delete vehicle if no active bookings exist
 const deleteVehicle = async (req: Request, res: Response) => {
-    // console.log(req.params.id);
     try {
         const result = await vehiclesServices.deleteVehicle(req.params.vehicleId as string)
-        // console.log(result)
         if (result.rowCount === 0) {
             res.status(404).json({
                 success: false,

@@ -7,7 +7,6 @@ const createBookings = async (payload: Record<string, unknown>) => {
     if (!customer_id || !vehicle_id || !rent_start_date || !rent_end_date) {
         throw new Error("missing fields")
     }
-    console.log(rent_start_date, rent_end_date)
     // check vehicle
     const { rows: vrows } = await pool.query(`
         SELECT * FROM vehicles WHERE id=$1
@@ -42,7 +41,6 @@ const createBookings = async (payload: Record<string, unknown>) => {
 
     const total_Price = Number((Number(vrows[0].daily_rent_price) * number_of_days).toFixed(2))
 
-    console.log(number_of_days, total_Price)
 
     const result = await pool.query(`
         INSERT INTO bookings(customer_id, vehicle_id, rent_start_date, rent_end_date, total_price) VALUES($1, $2, $3, $4, $5) RETURNING *
@@ -93,7 +91,73 @@ const getAllBookings = async (loggedInUser: JwtPayload) => {
 
     return bookings;
 }
+
+const updateBookings = async (status: string, id:string, loggedInUser: JwtPayload) => {
+    let updated = []
+    if(!status || !["cancelled","returned"].includes(status)) {
+        throw new Error("Invalid status");
+    }
+    // auto return
+    const curntDate = new Date()
+
+    const expired = await pool.query(`
+        SELECT id, vehicle_id, rent_end_date FROM bookings WHERE status='active'
+        `)
+
+    for (const b of expired.rows) {
+        const enDDate = new Date(b.rent_end_date)
+
+        if(enDDate < curntDate) {
+            await pool.query(`UPDATE bookings SET status='returned' WHERE id=$1`, [b.id])
+
+            await pool.query(`UPDATE vehicles SET availability_status='available' WHERE id=$1`, [b.vehicle_id])
+        }
+    }
+
+    
+    const { rows } = await pool.query(`
+        SELECT * FROM bookings WHERE id=$1
+        `, [id])
+    const booking = rows[0];
+
+    if(!booking) {
+        throw new Error("Booking not found");
+    }
+
+    // if cancelled
+    if(status === 'cancelled') {
+        if(loggedInUser.role !== "admin" && Number(booking.customer_id) !== Number(loggedInUser.id)) {
+            throw new Error("Forbidden");
+        }
+
+        const currentDate = new Date();
+        const startDate = new Date(booking.rent_start_date)
+
+        if(currentDate >= startDate) throw new Error("Cannot cancel booking that has not started or past");
+
+        await pool.query(`UPDATE bookings SET status='cancelled' WHERE id=$1`, [id])
+
+        await pool.query(`UPDATE vehicles SET availability_status='available' WHERE id=$1`, [booking.vehicle_id])
+        
+        const {rows: up} = await pool.query(`SELECT id, customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status FROM bookings WHERE id=$1`,[id])
+        updated=up[0];
+    }
+
+    //  if returned
+    if(status === "returned") {
+        if(loggedInUser.role !== 'admin') throw new Error("Forbidden");
+        
+        await pool.query(`UPDATE bookings SET status='returned' WHERE id=$1`, [id]);
+
+        await pool.query(`UPDATE vehicles SET availability_status='available' WHERE id=$1`, [booking.vehicle_id]);
+
+        const { rows: up } = await pool.query(`SELECT id, customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status FROM bookings WHERE id=$1`, [id]);
+        updated = up[0];
+    }
+    return updated;
+}
 export const bookingServices = {
     createBookings,
-    getAllBookings
+    getAllBookings,
+    updateBookings
 }

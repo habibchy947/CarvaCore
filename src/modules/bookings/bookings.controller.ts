@@ -33,17 +33,17 @@ const getAllBooking = async (req: Request, res: Response) => {
     const loggedInUser = req.user as JwtPayload;
     try {
         const result = await bookingServices.getAllBookings(loggedInUser as JwtPayload)
-        if(result.length === 0) {
+        if (result.length === 0) {
             return res.status(401).json({
                 success: false,
                 message: "Booking not found"
             })
-        } else{
+        } else {
             res.status(200).json({
-            success: true,
-            message: "Bookings retrieved successfully",
-            data: result
-        })
+                success: true,
+                message: "Bookings retrieved successfully",
+                data: result
+            })
         }
     } catch (error: any) {
         res.status(400).json({
@@ -53,7 +53,45 @@ const getAllBooking = async (req: Request, res: Response) => {
         })
     }
 }
+
+const updateBooking = async (req: Request, res: Response) => {
+    const loggedInUser = req.user as JwtPayload;
+    try {
+        const result = await bookingServices.updateBookings(req.body.status, req.params.bookingId as string, loggedInUser as JwtPayload)
+        if (result.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: "Booking not found"
+            })
+        } else if (req.body.status === "cancelled") {
+            return res.status(200).json({
+                success: true,
+                message: "Bookings cancelled successfully",
+                data: result
+            })
+        } else if (req.body.status === "returned") {
+            return res.status(200).json({
+                success: true,
+                message: "Bookings returned successfully",
+                data: {
+                    ...result,
+                    vehicle: {
+                        availability_status: "available"
+                    }
+                }
+            })
+        }
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message,
+            errors: error
+        })
+    }
+}
+
 export const bookingsController = {
     createBookings,
-    getAllBooking
+    getAllBooking,
+    updateBooking
 }

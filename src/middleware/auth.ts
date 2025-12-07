@@ -39,7 +39,6 @@ const auth = (...roles: ("admin" | "customer")[]) => {
             message: "Unauthorized access"
         })
         }
-        console.log(decoded)
         next()
     }
 }
