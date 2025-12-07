@@ -1,6 +1,6 @@
 # 🚗 CarvaCore
 
-**Live URL:** *(Add your live deployment URL here)*
+**Live URL:** *([https://carva-core.vercel.app/](https://carva-core.vercel.app/))*
 
 A backend API for a Vehicle Rental Management System, built to manage vehicles, customers, and bookings efficiently with role-based authentication and business rules enforcement.
 
